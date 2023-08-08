@@ -1,0 +1,86 @@
+name: Snapshot Test iOS
+description: A GitHub Actions workflow for running snapshot tests on iOS.
+
+inputs:
+  xcworkspacePath:
+    description: 'Path to the Xcode workspace file'
+    required: true
+
+  xcodeSnapshotTestScheme:
+    description: 'Scheme to run snapshot tests on'
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+    - name: Run snapshot tests on iOS
+      id: run-ios-snapshot-tests
+      shell: bash
+      run: |
+        xcodebuild -workspace "${{ inputs.xcworkspacePath }}" \
+            -scheme ${{ inputs.xcodeSnapshotTestScheme }} \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.4' \
+            test
+
+    - name: Process failed iOS snapshot test
+      if: failure()
+      id: failed-ios-screenshots
+      shell: bash
+      run: |
+        if [[ -z ${GITHUB_TOKEN} ]]; then
+          echo "Missing GITHUB_TOKEN variable"
+          exit 1
+        fi
+
+        if [[ -z ${GITHUB_REPOSITORY} ]]; then
+          echo "Missing GITHUB_REPOSITORY variable"
+          exit 1
+        fi
+
+        if [[ -z ${PR_BRANCH} ]]; then
+          echo "Missing PR_BRANCH variable"
+          exit 1
+        fi
+
+        FAILED_SNAPSHOTS="$(find . -name "__FailedSnapshots__" -type d)"
+        SNAPSHOTS="$(find . -name "__Snapshots__" -type d)"
+        PR_NUMBER="${GITHUB_REF#refs/pull/}"
+        PR_NUMBER="${PR_NUMBER/\/merge/}"
+        NEW_BRANCH_NAME="snapshots/pr-${PR_NUMBER}"
+        
+        cp -a ${FAILED_SNAPSHOTS}/* ${SNAPSHOTS}
+        rm -rf ${FAILED_SNAPSHOTS}
+        echo "PR_NUMBER=${PR_NUMBER}" >> "${GITHUB_OUTPUT}"
+
+        git config user.name "${GITHUB_ACTOR}"
+        git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+        git fetch origin "${PR_BRANCH}"
+        git checkout --track "origin/${PR_BRANCH}"
+        git checkout -b "${NEW_BRANCH_NAME}"
+        git add ${SNAPSHOTS}
+        git commit -m "test(snapshots): Update screenshots"
+        git push --force-with-lease --set-upstream origin "${NEW_BRANCH_NAME}":"${NEW_BRANCH_NAME}"
+        echo "PR_COMMENT=\"Screenshot tests failed.\n\n[See differences](https://github.com/${GITHUB_REPOSITORY}/compare/${PR_BRANCH}...${NEW_BRANCH_NAME})\n\nMerge the branch if it's an intentional change.\"" >> "${GITHUB_OUTPUT}"
+
+        unset FAILED_SNAPSHOTS
+        unset SNAPSHOTS
+        unset PR_NUMBER
+        unset NEW_BRANCH_NAME
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        PR_BRANCH: ${{ github.head_ref }}
+        GITHUB_ACTOR: ${{ github.actor }}
+
+    - name: Comment PR if iOS snapshot tests failed
+      uses: octokit/request-action@v2.1.9
+      if: always() && steps.failed-ios-screenshots.outputs.PR_COMMENT
+      with:
+        route: POST /repos/:repo/issues/:issue_number/comments
+        repo: ${{ github.repository }}
+        issue_number: ${{ steps.failed-ios-screenshots.outputs.PR_NUMBER }}
+        body: ${{ steps.failed-ios-screenshots.outputs.PR_COMMENT }}
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
