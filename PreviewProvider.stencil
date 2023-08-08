@@ -1,0 +1,36 @@
+import SwiftUI
+import SnapshotTesting
+import XCTest
+@testable import SnapshotArticle
+
+private func assertPreviewSnapshot<T: PreviewProvider>(_ target: T.Type,
+                                                       file: StaticString = #file,
+                                                       testName: String = #function,
+                                                       line: UInt = #line,
+                                                       isDarkMode: Bool = false) {
+    for preview in T._allPreviews {
+        let content = preview.content
+        let viewController = content.toViewController()
+        if isDarkMode {
+            viewController.overrideUserInterfaceStyle = .dark
+        }
+        assertSnapshot(matching: viewController,
+                       as: .image(on: .iPhone13),
+                       file: file,
+                       testName: testName,
+                       line: line)
+    }
+}
+
+class PreviewSnapshotTests: XCTestCase {
+{% for type in types.based.PreviewProvider %}
+    func test{{type.name}}() {
+        assertPreviewSnapshot({{type.name}}.self)
+    }
+
+    func test{{type.name}}_dark() {
+        assertPreviewSnapshot({{type.name}}.self, isDarkMode: true)
+    }
+
+{% endfor %}
+}

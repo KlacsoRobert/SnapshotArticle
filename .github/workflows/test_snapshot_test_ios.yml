@@ -1,0 +1,45 @@
+name: Test Snapshots on iOS
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/actions/snapshot_test_ios/action.yml'
+      - '.github/workflows/test_snapshot_test_ios.yml'
+
+jobs:
+  test_snapshot_test_ios:
+    runs-on: macos-13
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v3.5.3
+
+      - name: Select Xcode version
+        run: |
+          sudo xcode-select -s /Applications/Xcode_14.3.app
+
+      - name: Pod Install
+        shell: bash
+        run: |
+          pod install
+
+      - name: Cache Derived Data
+        uses: actions/cache@v3.3.1
+        if: ${{ !inputs.disableDerivedDataCache }}
+        with:
+          path: |
+            ~/Library/Developer/Xcode/DerivedData/
+          key: ${{ runner.os }}-xcode-${{ hashFiles('**/Podfile.lock', '**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-xcode-
+
+      - name: Run snapshot tests on iOS
+        uses: ./.github/actions/snapshot_test_ios
+        with:
+          xcworkspacePath: 'SnapshotArticle.xcworkspace'
+          xcodeSnapshotTestScheme: 'SnapshotArticle'
