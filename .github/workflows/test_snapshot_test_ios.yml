@@ -4,9 +4,6 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - '.github/actions/snapshot_test_ios/action.yml'
-      - '.github/workflows/test_snapshot_test_ios.yml'
 
 jobs:
   test_snapshot_test_ios:

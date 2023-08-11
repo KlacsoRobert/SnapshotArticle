@@ -21,7 +21,7 @@ struct SecondView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(.black)
                 .foregroundColor(.green)
-            Text("With black foreground and background")
+            Text("With black background and foreground")
                 .font(.body)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(.black)
