@@ -11,7 +11,7 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             VStack {
-                Image(systemName: "hand.wave")
+                Image(systemName: "globe")
                     .imageScale(.large)
                     .foregroundColor(.black.opacity(0.4))
                 NavigationLink(destination: SecondView()) {
