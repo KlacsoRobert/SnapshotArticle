@@ -33,13 +33,13 @@
 		01CB44543F614B69AEE58DE3 /* Pods_SnapshotArticle.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SnapshotArticle.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		621BA060A9C61105BD6576A4 /* Pods-SnapshotArticle.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SnapshotArticle.debug.xcconfig"; path = "Target Support Files/Pods-SnapshotArticle/Pods-SnapshotArticle.debug.xcconfig"; sourceTree = "<group>"; };
 		92D34A561CB043B8C2BA8413 /* Pods-SnapshotArticle.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SnapshotArticle.release.xcconfig"; path = "Target Support Files/Pods-SnapshotArticle/Pods-SnapshotArticle.release.xcconfig"; sourceTree = "<group>"; };
+		D002AD482A860EF70046500F /* SnapshotArticleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnapshotArticleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D05AD4052A7A418B007362F3 /* SnapshotArticleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotArticleApp.swift; sourceTree = "<group>"; };
 		D05AD4072A7A418B007362F3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D05AD4092A7A418C007362F3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D05AD40C2A7A418C007362F3 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		D05AD4132A7A6210007362F3 /* SecondView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondView.swift; sourceTree = "<group>"; };
-		D05AD41F2A7BEF24007362F3 /* SnapshotArticleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = SnapshotArticleTests.xctest; path = "/Users/robi/Development/Apter/SnapshotArticle/build/Debug-iphoneos/SnapshotArticleTests.xctest"; sourceTree = "<absolute>"; };
-		D05AD4282A7BF6A3007362F3 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
+		D05AD4282A7BF6A3007362F3 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		D05AD42B2A7BF783007362F3 /* SnapshotTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnapshotTest.swift; sourceTree = "<group>"; };
 		D05AD42E2A7BF811007362F3 /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
 		D05AD43A2A8231C3007362F3 /* SnapshotArticle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SnapshotArticle.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -92,6 +92,7 @@
 				8AD50023BEA73622E104A975 /* Frameworks */,
 				370939526343A7A3B7F680C6 /* Pods */,
 				D05AD43A2A8231C3007362F3 /* SnapshotArticle.app */,
+				D002AD482A860EF70046500F /* SnapshotArticleTests.xctest */,
 			);
 			sourceTree = "<group>";
 		};
@@ -173,7 +174,7 @@
 				D05AD4382A7BFB00007362F3 /* SnapshotTesting */,
 			);
 			productName = SnapshotArticleTests;
-			productReference = D05AD41F2A7BEF24007362F3 /* SnapshotArticleTests.xctest */;
+			productReference = D002AD482A860EF70046500F /* SnapshotArticleTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -277,7 +278,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "";
+			shellScript = "# After the first run you need to copy the output swift file into the project\nPods/Sourcery/bin/sourcery --sources ../SnapshotArticle --templates PreviewProvider.stencil --output SnapshotArticleTests/SnapshotTest.swift\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
